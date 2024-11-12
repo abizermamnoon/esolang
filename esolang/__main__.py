@@ -3,7 +3,7 @@ import esolang.level0_arithmetic
 import esolang.level1_statements
 import esolang.level2_loops
 import esolang.level3_functions
-
+import esolang.level4_logic
 
 def run_repl(lang = esolang.level3_functions):
     parser = lang.parser
@@ -24,7 +24,7 @@ def run_repl(lang = esolang.level3_functions):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--level', default=3, type=int)
+    parser.add_argument('--level', default=1, type=int)
     args = parser.parse_args()
 
     if args.level == 0:
@@ -35,3 +35,5 @@ if __name__ == '__main__':
         run_repl(esolang.level2_loops)
     if args.level == 3:
         run_repl(esolang.level3_functions)
+    if args.level == 4:
+        run_repl(esolang.level4_logic)

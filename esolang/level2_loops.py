@@ -9,6 +9,7 @@ grammar = esolang.level1_statements.grammar + r"""
 
     range: "range" "(" NUMBER ")"
 """
+
 parser = lark.Lark(grammar)
 
 
@@ -21,6 +22,8 @@ class Interpreter(esolang.level1_statements.Interpreter):
     45
     >>> interpreter.visit(parser.parse("a=0; for i in range(10) {a = a + i}; a"))
     45
+    >>> interpreter.visit(parser.parse("a=0,x=10; for i in range(x) {a = a + i}; a, x"))
+    45
     >>> interpreter.visit(parser.parse("a=0; for i in range(10) {a = a + i}; i")) # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
@@ -28,6 +31,7 @@ class Interpreter(esolang.level1_statements.Interpreter):
     '''
     def range(self, tree):
         return range(int(tree.children[0].value))
+
 
     def forloop(self, tree):
         varname = tree.children[0].value
@@ -38,3 +42,9 @@ class Interpreter(esolang.level1_statements.Interpreter):
             result = self.visit(tree.children[2])
         self.stack.pop()
         return result
+
+    def number(self, tree):
+        return int(tree.children[0].value)
+
+    def name(self, tree):
+        return self.stack[-1].get(tree.children[0].value, 0)

@@ -48,7 +48,7 @@ grammar = esolang.level0_arithmetic.grammar + r"""
         | assign_var
         | block
         | /#.*/                -> comment
-        |
+        | 
 
     block: "{" start* "}"
 
@@ -76,6 +76,10 @@ class Interpreter(esolang.level0_arithmetic.Interpreter):
     15
     >>> interpreter.visit(parser.parse("a = 3; {a+5}"))
     8
+    >>> interpreter.visit(parser.parse("1 ? 2 : 3"))
+    3
+    >>> interpreter.visit(parser.parse("{1-1} ? 1 : 2"))
+    1
     >>> interpreter.visit(parser.parse("a = 3; {a=5; a+5}"))
     10
     >>> interpreter.visit(parser.parse("a = 3; {a=5}; a+5"))
@@ -101,6 +105,7 @@ class Interpreter(esolang.level0_arithmetic.Interpreter):
                 return value
         self.stack[-1][name] = value
         return value
+
 
     def assign_var(self, tree):
         name = tree.children[0].value
