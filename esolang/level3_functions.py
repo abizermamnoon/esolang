@@ -76,13 +76,6 @@ class Interpreter(esolang.level2_loops.Interpreter):
         return foo
 
     def function_call(self, tree):
-        name = tree.children[0]
-
-        # the tree can be structured in different ways depending on the number of arguments;
-        # the following lines convert the params list into a single flat list
-        params = [self.visit(child) for child in tree.children[1:]]
-        params = [param for param in params if param is not None]
-        if len(params) > 0 and isinstance(params[-1], list):
-            params = params[0]
-
-        return self._get_from_stack(name)(*params)
+        name = tree.children[0].value
+        args = [self.visit(arg) for arg in tree.children[1:]] if len(tree.children) > 1 else []
+        return self._get_from_stack(name)(*args)

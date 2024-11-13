@@ -7,11 +7,10 @@ grammar = esolang.level1_statements.grammar + r"""
 
     forloop: "for" NAME "in" range block
 
-    range: "range" "(" NUMBER ")"
+    range: "range" "(" start ")"
 """
 
 parser = lark.Lark(grammar)
-
 
 class Interpreter(esolang.level1_statements.Interpreter):
     '''
@@ -22,29 +21,24 @@ class Interpreter(esolang.level1_statements.Interpreter):
     45
     >>> interpreter.visit(parser.parse("a=0; for i in range(10) {a = a + i}; a"))
     45
-    >>> interpreter.visit(parser.parse("a=0,x=10; for i in range(x) {a = a + i}; a, x"))
-    45
     >>> interpreter.visit(parser.parse("a=0; for i in range(10) {a = a + i}; i")) # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     ValueError: Variable i undefined
+    >>> interpreter.visit(parser.parse("a=5; for i in range(a) {a = a + i}; a"))
+    15
     '''
     def range(self, tree):
-        return range(int(tree.children[0].value))
-
+        return range(int(self.visit(tree.children[0])))
 
     def forloop(self, tree):
         varname = tree.children[0].value
         xs = self.visit(tree.children[1])
         self.stack.append({})
+        result = None
         for x in xs:
             self.stack[-1][varname] = x
             result = self.visit(tree.children[2])
         self.stack.pop()
         return result
 
-    def number(self, tree):
-        return int(tree.children[0].value)
-
-    def name(self, tree):
-        return self.stack[-1].get(tree.children[0].value, 0)
